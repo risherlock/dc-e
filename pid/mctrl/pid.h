@@ -6,10 +6,15 @@
 class pid
 {
 private:
-  bool is_p = false, is_i = false, is_d = false; // Enable flags
-  float ez = 0.0, iz = 0.0, dz = 0.0; // Past variables
-  float u_min = 0.0, u_max = 0.0; // Output limits
-  float kp, ki, kd; // PID gains
+  // Internal variables
+  bool is_p, is_i, is_d; // Enable flags
+  float epz, eiz, edz;   // Past errors
+  float iz, dz;          // Past I and D
+
+  // Configurable variables
+  float kp, ki, kd;   // PID gains
+  float u_min, u_max; // Output limits
+  float b, c;         // Set-point weights
 
   float saturate_control(const float in);
 
@@ -17,16 +22,22 @@ public:
   pid();
   ~pid();
 
-  void set_kp(const float p);
-  void set_ki(const float i);
-  void set_kd(const float d);
-  void set_a(const float a);
-  void set_b(const float b);
+  void set_kp(const float val) { kp = val; is_p = true; }
+  void set_ki(const float val) { ki = val; is_i = true; }
+  void set_kd(const float val) { kd = val; is_d = true; }
+  void set_b(const float val) { b = val; }
+  void set_c(const float val) { c = val; }
 
+  float get_kp(void) const { return kp; }
+  float get_ki(void) const { return ki; }
+  float get_kd(void) const { return kd; }
+  float get_b(void) const { return b; }
+  float get_c(void) const { return c; }
+
+  void reset_pid(void);
   void reset_memory(void);
-  float update(const float e, const float dt);
-  void set_control_limits(const float u_min, const float u_max);
+  float update(const float, const float, const float);
+  void set_limits(const float u_min, const float u_max);
 };
 
 #endif // pid.h
-

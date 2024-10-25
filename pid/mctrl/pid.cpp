@@ -1,6 +1,11 @@
 #include "pid.h"
 
-pid::pid()
+pid::pid() : kp(0.0), ki(0.0), kd(0.0),
+             u_min(0.0), u_max(1.0),
+             b(1.0), c(1.0),
+             is_p(false), is_i(false), is_d(false),
+             epz(0.0), eiz(0.0), edz(0.0),
+             iz(0.0), dz(0.0)
 {
 }
 
@@ -8,17 +13,26 @@ pid::~pid()
 {
 }
 
+// Reset PID params
+void pid::reset_pid(void)
+{
+  kp = 0.0, ki = 0.0, kd = 0.0;
+  u_min = 0.0, u_max = 1.0;
+  b = 1.0, c = 1.0;
+  is_p = false, is_i = false, is_d = false;
+}
+
+// Rest past memories
 void pid::reset_memory(void)
 {
-  ez = 0.0;
-  iz = 0.0;
-  dz = 0.0;
+  epz = 0.0; eiz = 0.0; edz = 0.0;
+  iz = 0.0; dz = 0.0;
 }
 
 // Sign of input number
 static int sign(float in)
 {
-  if(in < 0)
+  if (in < 0)
   {
     return -1;
   }
@@ -49,52 +63,38 @@ float pid::saturate_control(const float in)
   E(s) ---->| kp + ki / s + kd * s |----> U(s)
             |______________________|
 */
-float pid::update(float e, float dt)
+float pid::update(const float set_point, const float feedback, const float dt)
 {
+  const float ep = set_point - feedback;
+  const float ei = set_point * b - feedback;
+  const float ed = set_point * c - feedback;
+
   float p = 0.0, i = 0.0, d = 0.0;
 
   if (is_p)
   {
-    p = kp * e;
+    p = kp * ep;
   }
 
   if (is_i)
   {
-    i = iz + 0.5 * ki * dt * (e + ez);
+    i = iz + 0.5 * ki * dt * (ei + eiz);
     iz = i;
   }
 
   if (is_d)
   {
-    d = -dz + 2 * kd * (e - ez) / dt;
+    d = -dz + 2 * kd * (ed - edz) / dt;
     dz = d;
   }
 
   const float u = p + i + d;
-  ez = e;
+  epz = ep; eiz = ei; edz = ed;
 
   return saturate_control(u);
 }
 
-void pid::set_kp(const float p)
-{
-  kp = p;
-  is_p = true;
-}
-
-void pid::set_ki(const float i)
-{
-  ki = i;
-  is_i = true;
-}
-
-void pid::set_kd(const float d)
-{
-  kd = d;
-  is_d = true;
-}
-
-void pid::set_control_limits(const float min, const float max)
+void pid::set_limits(const float min, const float max)
 {
   if (min < max)
   {

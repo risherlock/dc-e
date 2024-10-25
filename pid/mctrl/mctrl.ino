@@ -6,7 +6,7 @@
 #include "hbridge.h"
 
 // PID parameters
-float set_point = -100;
+float set_point = 00;
 const unsigned long dt_ms = 20;
 float kp = 0.25;
 float ki = 0.1;
@@ -46,10 +46,10 @@ void setup()
   // PID config
   ctrl.set_kp(kp);
   ctrl.set_ki(ki);
-  ctrl.set_control_limits(umin, umax);
+  ctrl.set_limits(umin, umax);
 
   // H-bridge config
-   motor.init(pin_pwm_a, pin_pwm_b);
+  motor.init(pin_pwm_a, pin_pwm_b);
 }
 
 void loop()
@@ -67,8 +67,7 @@ void loop()
     feedback = encoder::get_omega(dt);
 
     // Think
-    const float error = set_point - feedback;
-    const float duty_cycle = ctrl.update(error, dt);
+    const float duty_cycle = ctrl.update(set_point, feedback, dt);
 
     // Actuate
     motor.actuate(duty_cycle);
@@ -97,4 +96,3 @@ ISR(TIMER3_COMPA_vect)
   }
   dt_count++;
 }
-
