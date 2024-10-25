@@ -6,7 +6,7 @@
 #include "hbridge.h"
 
 // PID parameters
-float set_point = 00;
+float set_point = -100;
 const unsigned long dt_ms = 20;
 float kp = 0.25;
 float ki = 0.1;
@@ -33,7 +33,6 @@ hbridge motor;
 
 void setup()
 {
-  delay(2000);
   Serial.begin(115200);
   pinMode(13, OUTPUT);
 
