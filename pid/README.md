@@ -31,6 +31,6 @@ Analysis of the windup effect, anti-windup method, setpoint weighting, ramp gene
 ## Resources
 
 1. [Slides: Practical considerations of the digital PID controller - I](https://docs.google.com/presentation/d/1D3b5DKBIZ9c9zFgfUgT3De1V4krvGlq5N0wZwVRe7Ws)
-1. [Slides: Practical considerations of the digital PID controller - II](https://docs.google.com/presentation/d/1D3b5DKBIZ9c9zFgfUgT3De1V4krvGlq5N0wZwVRe7Ws)
+1. [Slides: Practical considerations of the digital PID controller - II](https://docs.google.com/presentation/d/18KgDfq2xe6WVHltt0njcEpry0DqAeyzvXUwFDCCahDc)
 2. [Report on the PID controller based on the presentation](https://www.overleaf.com/read/wmkhdnhyztcy#711179)
 3. [Source code to the demonstration project on PID control of DC brushed motor](mctrl)
