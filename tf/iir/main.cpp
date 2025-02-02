@@ -4,12 +4,15 @@
 #include <fstream>
 #include <iostream>
 
+#define FILTER_ORDER 2
+#define FILTER_COEFF_SIZE (FILTER_ORDER + 1)
+
 int main()
 {
   // Second-order filter
-  double b[] = {1.23, 2.34, 1.45};
-  double a[] = {1.43, -1.8, 0.81};
-  filter<2> my_filter(b, a);
+  double b[FILTER_COEFF_SIZE] = {1.23, 2.34, 1.45};
+  double a[FILTER_COEFF_SIZE] = {1.43, -1.8, 0.81};
+  filter<FILTER_ORDER> my_filter(b, a);
 
   double data[] =
   {
