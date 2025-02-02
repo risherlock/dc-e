@@ -1,5 +1,5 @@
 /**
- * @brief nth order IIR filter for given coefficients of transfer function.
+ * @brief nth-order IIR filter for given discrete transfer function coefficients.
  * @author risherlock
  * @date 2025-02-02
  */
@@ -15,7 +15,9 @@ private:
 
 public:
   filter(const double b_in[order + 1], const double a_in[order + 1]);
+
   double update(double input);
+  void set_x0(const double x0[order]);
 };
 
 /**
@@ -28,10 +30,17 @@ public:
  * where m <= n and order of TF = n - 1.
  *
  * @note Please append zeros to a_in[] if m < n.
+ *       If a[0] == 0, the update() function will return only zeros.
  */
 template <int order>
 filter<order>::filter(const double b_in[order + 1], const double a_in[order + 1])
 {
+  // Avoid division by zero
+  if (a_in[0] == 0.0)
+  {
+    return;
+  }
+
   for (int i = 0; i <= order; i++)
   {
     b[i] = b_in[i] / a_in[0];
@@ -39,7 +48,12 @@ filter<order>::filter(const double b_in[order + 1], const double a_in[order + 1]
   }
 }
 
-// Single step
+/**
+ * @brief Performs a single step of the discrete IIR filter.
+ *
+ * @param input The discrete-time input signal x[t] to the transfer function.
+ * @returns The discrete-time output signal y[t] from the transfer function.
+ */
 template <int order>
 double filter<order>::update(double input)
 {
@@ -58,4 +72,24 @@ double filter<order>::update(double input)
   }
 
   return y[0];
+}
+
+/**
+ * @brief Sets the initial state, which would otherwise be zero.
+ *
+ * Initializing the filter is analogous to setting initial conditions when integrating a
+ * differential equation. After all, a transfer function is derived from a differential
+ * equation, and this filter implementation represents its solution (i.e. numerical integration).
+ *
+ * @param x0[order] Initial states of the filter, equal in number to the filter order.
+ *
+ * @note Proper initialization results in a better transient response.
+ */
+template <int order>
+void filter<order>::set_x0(const double x0[order])
+{
+  for (int i = order - 1; i > 0; i--)
+  {
+    x[i + 1] = x0[i];
+  }
 }

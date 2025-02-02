@@ -8,6 +8,9 @@ import scipy.signal as signal
 b = [1.23, 2.34, 1.45]
 a = [1.43, -1.8, 0.81]
 
+# Initial state
+x0 = [0.12, 0.34]
+
 # Input data
 data = np.array([
   0.1234, 0.5678, 0.9101, 0.1121, 0.3141, 0.5161, 0.7181, 0.9202, 0.2232, 0.4252,
@@ -24,6 +27,7 @@ data = np.array([
 
 # Apply the filter
 filtered_data = signal.lfilter(b, a, data)
+# filtered_data, _ = signal.lfilter(b, a, data, zi = x0)
 
 # Write to CSV file
 with open("python.csv", "w") as f:

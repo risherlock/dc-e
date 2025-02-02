@@ -12,7 +12,12 @@ int main()
   // Second-order filter
   double b[FILTER_COEFF_SIZE] = {1.23, 2.34, 1.45};
   double a[FILTER_COEFF_SIZE] = {1.43, -1.8, 0.81};
+
+  // Initial state
+  // double x0[FILTER_ORDER] = {0.12, 0.34};
+
   filter<FILTER_ORDER> my_filter(b, a);
+  // my_filter.set_x0(x0);
 
   double data[] =
   {
