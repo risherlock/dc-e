@@ -10,5 +10,5 @@ DC&E is a club of enthusiasts in dynamics, control, estimation, and applied math
 ## Coming soon
 
 1. [Practical considerations of the digital PID controller - III](pid/README.md) by Rishav
-2. [Transfer functions]() by Rishav 
-4. [Stealing the sound of strings: The Karplus-Strong algorithm](strings/README.md) by Sagar
+2. [Transfer functions](tf/iir/filter.h) by Rishav
+3. [Stealing the sound of strings: The Karplus-Strong algorithm](strings/README.md) by Sagar
