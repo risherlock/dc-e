@@ -9,7 +9,7 @@ b = [1.23, 2.34, 1.45]
 a = [1.43, -1.8, 0.81]
 
 # Initial state
-x0 = [0.12, 0.34]
+x0 = [1.12, 2.34]
 
 # Input data
 data = np.array([
@@ -26,8 +26,7 @@ data = np.array([
 ])
 
 # Apply the filter
-filtered_data = signal.lfilter(b, a, data)
-# filtered_data, _ = signal.lfilter(b, a, data, zi = x0)
+filtered_data, _ = signal.lfilter(b, a, data, zi = x0)
 
 # Write to CSV file
 with open("python.csv", "w") as f:

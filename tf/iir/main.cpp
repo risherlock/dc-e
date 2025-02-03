@@ -14,10 +14,10 @@ int main()
   double a[FILTER_COEFF_SIZE] = {1.43, -1.8, 0.81};
 
   // Initial state
-  // double x0[FILTER_ORDER] = {0.12, 0.34};
+  double q0[FILTER_ORDER] = {1.12, 2.34};
 
   filter<FILTER_ORDER> my_filter(b, a);
-  // my_filter.set_x0(x0);
+  my_filter.set_initial_state(q0);
 
   double data[] =
   {

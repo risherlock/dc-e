@@ -1,5 +1,9 @@
 /**
- * @brief nth-order IIR filter for given discrete transfer function coefficients.
+ * @brief Implementation of nth-order IIR filter for given discrete transfer function coefficients.
+ *
+ * @details It uses Transposed Direct Form II structure which utilizes the fewest delay elements
+ *          and multiplications. The implementation is based on Octave's 'filter()' function.
+ *
  * @author risherlock
  * @date 2025-02-02
  */
@@ -8,20 +12,19 @@ template <int order>
 class filter
 {
 private:
-  double a[order + 1];
-  double b[order + 1];
-  double x[order + 1] = {0};
-  double y[order + 1] = {0};
+  double a[order + 1];   // Denominator coefficients
+  double b[order + 1];   // Numerator coefficients
+  double q[order] = {0}; // Internal state of the filter
 
 public:
   filter(const double b_in[order + 1], const double a_in[order + 1]);
 
   double update(double input);
-  void set_x0(const double x0[order]);
+  void set_initial_state(const double x0[order]);
 };
 
 /**
- * @brief Set the coefficients of the filter's transfer function, expressed as:
+ * @brief Set the coefficients of the IIR filter's transfer function, expressed as:
  *
  *         Y(z)     b[0] + b[1] * z^(-1) + b[2] * z^(-2) + ... + b[n] * z^(-n)
  * H(z) = ------ = ------------------------------------------------------------
@@ -49,7 +52,9 @@ filter<order>::filter(const double b_in[order + 1], const double a_in[order + 1]
 }
 
 /**
- * @brief Performs a single step of the discrete IIR filter.
+ * @brief Performs a single step of the discrete IIR filter i.e. returns the
+ *        solution of linear, time-invariant different equation represented
+ *        by H(z) using Transposed Direct Form II.
  *
  * @param input The discrete-time input signal x[t] to the transfer function.
  * @returns The discrete-time output signal y[t] from the transfer function.
@@ -57,39 +62,32 @@ filter<order>::filter(const double b_in[order + 1], const double a_in[order + 1]
 template <int order>
 double filter<order>::update(double input)
 {
-  x[0] = input;
-  y[0] = b[0] * x[0];
+  // Compute output using the first state
+  double y = q[0] + b[0] * input;
 
-  for (int i = 1; i <= order; ++i)
+  // Propagate the filter state
+  for (int i = 0; i < order - 1; i++)
   {
-    y[0] += b[i] * x[i] - a[i] * y[i];
+    q[i] = q[i + 1] - a[i + 1] * y + b[i + 1] * input;
   }
 
-  for (int i = order; i > 0; --i)
-  {
-    x[i] = x[i - 1];
-    y[i] = y[i - 1];
-  }
+  // Update the last state variable
+  q[order - 1] = b[order] * input - a[order] * y;
 
-  return y[0];
+  return y;
 }
 
 /**
- * @brief Sets the initial state, which would otherwise be zero.
- *
- * Initializing the filter is analogous to setting initial conditions when integrating a
- * differential equation. After all, a transfer function is derived from a differential
- * equation, and this filter implementation represents its solution (i.e. numerical integration).
+ * @brief Sets the initial state of the filter, which would otherwise be zero.
+ *        It is equivalent to equivalent to Octave’s si.
  *
  * @param x0[order] Initial states of the filter, equal in number to the filter order.
- *
- * @note Proper initialization results in a better transient response.
  */
 template <int order>
-void filter<order>::set_x0(const double x0[order])
+void filter<order>::set_initial_state(const double q0[order])
 {
-  for (int i = order - 1; i > 0; i--)
+  for (int i = 0; i < order; i++)
   {
-    x[i + 1] = x0[i];
+    q[i] = q0[i];
   }
 }
